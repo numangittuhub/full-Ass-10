@@ -1,6 +1,7 @@
+// src/pages/IssueDetails.jsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance.js"; // এটাই ব্যবহার করতে হবে
 import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext.jsx";
 
@@ -10,58 +11,50 @@ export default function IssueDetails() {
   const { user } = useAuth();
 
   const [issue, setIssue] = useState(null);
-  const [contributions, setContributions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [contributing, setContributing] = useState(false);
 
-  // ফেচ ইস্যু
+  // ইস্যু ফেচ করা
   useEffect(() => {
-    const fetchIssue = async () => {
-      try {
-        const res = await axios.get(`http://localhost:5000/api/issues/${id}`);
-        setIssue(res.data);
-      } catch (err) {
+    axiosInstance
+      .get(`/issues/${id}`)
+      .then((res) => setIssue(res.data))
+      .catch(() => {
         Swal.fire("Error", "Issue not found!", "error");
         navigate("/all-issues");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchIssue();
+      })
+      .finally(() => setLoading(false));
   }, [id, navigate]);
 
-  // কন্ট্রিবিউশন হ্যান্ডলার
+  // কন্ট্রিবিউশন পোস্ট করা (সার্ভারে যাবে)
   const handleContribute = async (e) => {
     e.preventDefault();
-    setContributing(true);
+    const form = e.target;
 
-    const formData = {
+    const contributionData = {
       issueId: id,
       issueTitle: issue.title,
-      amount: Number(e.target.amount.value),
-      name: e.target.name.value,
-      email: user?.email || "anonymous@example.com",
-      phone: e.target.phone.value,
-      address: e.target.address.value,
-      date: new Date().toISOString(),
+      amount: Number(form.amount.value),
+      name: form.name.value,
+      email: user.email,
+      phone: form.phone.value,
+      address: form.address.value,
     };
 
     try {
-      // পরে এখানে POST /api/contributions API যোগ করব
-      // এখন শুধু UI-তে দেখাব
-      setContributions([...contributions, formData]);
+      await axiosInstance.post("/contributions", contributionData);
+
       Swal.fire({
         icon: "success",
         title: "Thank You!",
-        text: `You contributed ৳${formData.amount} successfully!`,
+        text: `৳${contributionData.amount} contributed successfully!`,
         timer: 3000,
       });
-      e.target.reset();
+
+      form.reset();
       document.getElementById("contribute_modal").close();
     } catch (err) {
-      Swal.fire("Error", "Contribution failed!", "error");
-    } finally {
-      setContributing(false);
+      console.error("Contribution failed:", err);
+      Swal.fire("Error!", "Failed to contribute. Try again.", "error");
     }
   };
 
@@ -80,11 +73,7 @@ export default function IssueDetails() {
       <div className="max-w-5xl mx-auto">
         {/* Main Issue Card */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
-          <img
-            src={issue.image}
-            alt={issue.title}
-            className="w-full h-96 object-cover"
-          />
+          <img src={issue.image} alt={issue.title} className="w-full h-96 object-cover" />
           <div className="p-8 lg:p-12">
             <h1 className="text-4xl lg:text-5xl font-bold text-gray-800 dark:text-white mb-4">
               {issue.title}
@@ -123,24 +112,6 @@ export default function IssueDetails() {
             </button>
           </div>
         </div>
-
-        {/* Contributors List */}
-        {contributions.length > 0 && (
-          <div className="mt-12 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-            <h2 className="text-3xl font-bold mb-6">Our Heroes (Contributors)</h2>
-            <div className="space-y-4">
-              {contributions.map((c, i) => (
-                <div key={i} className="flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                  <div>
-                    <p className="font-semibold">{c.name}</p>
-                    <p className="text-sm text-gray-600">{c.phone} • {c.address}</p>
-                  </div>
-                  <p className="text-2xl font-bold text-green-600">৳{c.amount}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Modal */}
@@ -148,45 +119,16 @@ export default function IssueDetails() {
         <div className="modal-box">
           <h3 className="text-2xl font-bold mb-6">Make Your Contribution</h3>
           <form onSubmit={handleContribute} className="space-y-5">
-            <input
-              name="name"
-              type="text"
-              placeholder="Your Full Name"
-              required
-              className="input input-bordered w-full"
-            />
-            <input
-              name="amount"
-              type="number"
-              min="50"
-              placeholder="Amount in BDT (min 50)"
-              required
-              className="input input-bordered w-full"
-            />
-            <input
-              name="phone"
-              type="tel"
-              placeholder="Phone Number"
-              required
-              className="input input-bordered w-full"
-            />
-            <input
-              name="address"
-              type="text"
-              placeholder="Your Address"
-              required
-              className="input input-bordered w-full"
-            />
+            <input name="name" type="text" placeholder="Your Full Name" required className="input input-bordered w-full" />
+            <input name="amount" type="number" min="50" placeholder="Amount in BDT (min 50)" required className="input input-bordered w-full" />
+            <input name="phone" type="tel" placeholder="Phone Number" required className="input input-bordered w-full" />
+            <input name="address" type="text" placeholder="Your Address" required className="input input-bordered w-full" />
 
             <div className="modal-action">
-              <button type="submit" disabled={contributing} className="btn btn-success">
-                {contributing ? "Processing..." : "Contribute Now"}
+              <button type="submit" className="btn btn-success">
+                Contribute Now
               </button>
-              <button
-                type="button"
-                className="btn"
-                onClick={() => document.getElementById("contribute_modal").close()}
-              >
+              <button type="button" className="btn" onClick={() => document.getElementById("contribute_modal").close()}>
                 Cancel
               </button>
             </div>
