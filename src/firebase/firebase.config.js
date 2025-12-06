@@ -2,20 +2,19 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
-// তোমার Firebase প্রজেক্টের কনফিগ (তুমি যেটা দিয়েছ, একদম ঠিক)
+// Vite এর env থেকে নিচ্ছে
 const firebaseConfig = {
-  apiKey: "AIzaSyD5fArVcUnMmJ4iuc4LU7U3mio-JxZAyJ4",
-  authDomain: "ass-10-264a3.firebaseapp.com",
-  projectId: "ass-10-264a3",
-  storageBucket: "ass-10-264a3.firebasestorage.app",
-  messagingSenderId: "799511913254",
-  appId: "1:799511913254:web:a3e64bfe20e55e1d0f57e7"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Firebase ইনিশিয়ালাইজ করো
+// Firebase ইনিশিয়ালাইজ
 const app = initializeApp(firebaseConfig);
 
-// Auth অবজেক্ট এক্সপোর্ট করো (এটা ছাড়া লগইন কাজ করবে না)
+// Auth এক্সপোর্ট (এটাই লাগবে সব জায়গায়)
 export const auth = getAuth(app);
-
-export default app; // যদি পরে লাগে
+export default app;

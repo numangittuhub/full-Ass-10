@@ -1,60 +1,72 @@
-import { useState } from "react";
+// src/pages/MyContribution.jsx
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext.jsx";
+import axiosInstance from "../utils/axiosInstance.js";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
-const dummyData = [
-  { issue: "Garbage on Road 21", amount: 500, date: "2025-12-04" },
-  { issue: "Broken Footpath", amount: 300, date: "2025-12-02" },
-];
+export default function MyContribution() {
+  const { user } = useAuth();
+  const [contributions, setContributions] = useState([]);
 
-export default function MyContributions() {
-  const [contributions] = useState(dummyData);
+  useEffect(() => {
+    if (user) {
+      axiosInstance.get(`/contributions/my/${user.email}`)
+        .then(res => setContributions(res.data))
+        .catch(() => setContributions([]));
+    }
+  }, [user]);
 
   const downloadPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(20);
-    doc.text("My Contribution Report", 14, 20);
+    doc.text("My Contributions Report", 14, 20);
     doc.setFontSize(12);
-    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+    doc.text(`Name: ${user.displayName || user.email}`, 14, 32);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 40);
 
     autoTable(doc, {
-      head: [["Issue Title", "Amount (BDT)", "Date"]],
-      body: contributions.map(c => [c.issue, c.amount, c.date]),
-      startY: 40,
+      head: [["Issue Title", "Amount (৳)", "Date"]],
+      body: contributions.map(c => [
+        c.issueTitle,
+        c.amount,
+        new Date(c.date).toLocaleDateString()
+      ]),
+      startY: 50,
     });
 
     doc.save("my-contributions.pdf");
   };
 
-  return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-800 py-12 px-4">
-      <div className="max-w-5xl mx-auto">
-        <h2 className="text-4xl font-bold text-center mb-10">My Contributions</h2>
+  if (!user) return <div className="text-center py-20 text-3xl">Please login</div>;
 
-        <table className="w-full bg-white dark:bg-gray-900 rounded-xl shadow-lg mb-8">
-          <thead className="bg-green-600 text-white">
-            <tr>
-              <th className="p-4">Issue Title</th>
-              <th className="p-4">Amount</th>
-              <th className="p-4">Date</th>
-              <th className="p-4">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {contributions.map((c, i) => (
-              <tr key={i} className="border-b text-center">
-                <td className="p-4">{c.issue}</td>
-                <td className="p-4">৳{c.amount}</td>
-                <td className="p-4">{c.date}</td>
-                <td className="p-4">
-                  <button onClick={downloadPDF} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                    Download PDF
-                  </button>
-                </td>
-              </tr>
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-5xl font-bold text-green-600">My Contributions</h2>
+          {contributions.length > 0 && (
+            <button onClick={downloadPDF} className="btn btn-primary text-xl px-8">
+              Download PDF
+            </button>
+          )}
+        </div>
+
+        {contributions.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-3xl text-gray-500">You haven't contributed yet</p>
+          </div>
+        ) : (
+          <div className="grid gap-6">
+            {contributions.map(c => (
+              <div key={c._id} className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl">
+                <h3 className="text-2xl font-bold text-green-600">{c.issueTitle}</h3>
+                <p className="text-xl mt-2">Amount: ৳{c.amount}</p>
+                <p className="text-gray-600">Date: {new Date(c.date).toLocaleDateString()}</p>
+              </div>
             ))}
-          </tbody>
-        </table>
+          </div>
+        )}
       </div>
     </div>
   );
