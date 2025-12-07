@@ -8,6 +8,7 @@ import AllIssues from "./pages/AllIssues.jsx";
 import IssueDetails from "./pages/IssueDetails.jsx";
 import MyIssues from "./pages/MyIssues.jsx";
 import MyContributions from "./pages/MyContributions.jsx";
+import Footer from "./layout/Footer.jsx";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
             }
           />
         </Routes>
+        <Footer></Footer>
       </div>
     </BrowserRouter>
   );

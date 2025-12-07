@@ -40,42 +40,47 @@ export default function Login() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
+            <label className="block text-sm font-medium mb-2 dark:text-gray-300">Email</label>
             <input
               type="email"
               {...register("email", { required: "Email is required" })}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
               placeholder="noman@example.com"
             />
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Password</label>
+            <label className="block text-sm font-medium mb-2 dark:text-gray-300">Password</label>
             <input
               type="password"
               {...register("password", { required: "Password is required" })}
-              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
+              className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
             />
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
           </div>
 
-          <button type="submit" className="w-full btn-primary py-3 text-lg">
+          {/* 👇️ এই বাটনটির স্টাইল পরিবর্তন করা হয়েছে */}
+          <button 
+            type="submit" 
+            className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 text-lg"
+          >
             Login
           </button>
         </form>
 
         <div className="mt-6">
+          {/* 👇️ এই বাটনটির স্টাইল পরিবর্তন করা হয়েছে */}
           <button
             onClick={handleGoogle}
-            className="w-full flex items-center justify-center gap-3 border-2 border-gray-300 py-3 rounded-lg hover:bg-gray-50 transition"
+            className="w-full flex items-center justify-center gap-3 border-2 border-gray-300 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-300 ease-in-out text-gray-700 dark:text-gray-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-400"
           >
             <FcGoogle size={24} />
             <span className="font-medium">Continue with Google</span>
           </button>
         </div>
 
-        <p className="text-center mt-6 text-gray-600">
+        <p className="text-center mt-6 text-gray-600 dark:text-gray-400">
           Don't have an account?{" "}
           <Link to="/register" className="text-blue-600 font-bold hover:underline">
             Register

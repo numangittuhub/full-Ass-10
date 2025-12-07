@@ -45,7 +45,7 @@ export default function Register() {
             type="text"
             placeholder="Full Name"
             {...register("name")}
-            className="w-full px-4 py-3 border rounded-lg dark:bg-gray-800"
+            className="w-full px-4 py-3 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           <div>
@@ -53,7 +53,7 @@ export default function Register() {
               type="email"
               placeholder="Email"
               {...register("email", { required: "Email is required" })}
-              className="w-full px-4 py-3 border rounded-lg dark:bg-gray-800"
+              className="w-full px-4 py-3 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
           </div>
@@ -70,27 +70,31 @@ export default function Register() {
                   message: "Must contain uppercase & lowercase letter",
                 },
               })}
-              className="w-full px-4 py-3 border rounded-lg dark:bg-gray-800"
+              className="w-full px-4 py-3 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
           </div>
 
-          <button type="submit" className="w-full btn-primary py-3 text-lg">
+          {/* 👇️ এই বাটনটির স্টাইল পরিবর্তন করা হয়েছে */}
+          <button 
+            type="submit" 
+            className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-[1.01] focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+          >
             Create Account
           </button>
         </form>
 
+        {/* 👇️ এই বাটনটির স্টাইল পরিবর্তন করা হয়েছে */}
         <button
           onClick={handleGoogle}
-          className="w-full flex items-center justify-center gap-3 border-2 border-gray-300 py-3 rounded-lg hover:bg-gray-50 mt-4 transition"
+          className="w-full flex items-center justify-center gap-3 border-2 border-gray-300 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 mt-4 transition duration-300 ease-in-out text-gray-700 dark:text-gray-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-400"
         >
           <FcGoogle size={24} />
           <span className="font-medium">Continue with Google</span>
         </button>
 
-        <p className="text-center mt-6 text-gray-600">
+        <p className="text-center mt-6 text-gray-600 dark:text-gray-400">
           Already have an account?{" "}
-
           <Link to="/login" className="text-blue-600 font-bold hover:underline">
             Login
           </Link>
