@@ -1,6 +1,7 @@
+// src/pages/AllIssues.jsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance.js";
 import Swal from "sweetalert2";
 
 export default function AllIssues() {
@@ -12,22 +13,22 @@ export default function AllIssues() {
   const [selectedIssue, setSelectedIssue] = useState(null);
 
   useEffect(() => {
-    const fetchIssues = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/api/issues");
+    axiosInstance
+      .get("/issues")
+      .then((res) => {
         setIssues(res.data);
         setFiltered(res.data);
-      } catch (err) {
-        Swal.fire("Error", "Failed to load issues", "error");
-      } finally {
         setLoading(false);
-      }
-    };
-    fetchIssues();
+      })
+      .catch(() => {
+        Swal.fire("Error", "Failed to load issues", "error");
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
     let result = [...issues];
+
     if (search.trim()) {
       result = result.filter(
         (i) =>
@@ -40,24 +41,6 @@ export default function AllIssues() {
     }
     setFiltered(result);
   }, [search, category, issues]);
-
-  const handleDelete = (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This action cannot be undone!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setFiltered(filtered.filter((i) => i._id !== id));
-        setIssues(issues.filter((i) => i._id !== id));
-        Swal.fire("Deleted!", "Issue has been removed.", "success");
-      }
-    });
-  };
 
   if (loading) {
     return (
@@ -92,10 +75,10 @@ export default function AllIssues() {
             className="select select-bordered select-lg rounded-xl dark:bg-gray-800"
           >
             <option value="">All Categories</option>
-            <option value="Garbage">Garbage</option>
-            <option value="Illegal Construction">Illegal Construction</option>
-            <option value="Broken Public Property">Broken Public Property</option>
-            <option value="Road Damage">Road Damage</option>
+            <option>Garbage</option>
+            <option>Illegal Construction</option>
+            <option>Broken Public Property</option>
+            <option>Road Damage</option>
           </select>
         </div>
 
@@ -121,12 +104,11 @@ export default function AllIssues() {
                     {issue.title}
                   </h3>
 
-                  {/* Short Description */}
                   <p className="text-gray-600 dark:text-gray-400 mb-4 flex-1 line-clamp-3">
                     {issue.description}
                   </p>
 
-                  {/* See More Button */}
+                  {/* See More */}
                   {issue.description.length > 100 && (
                     <button
                       onClick={() => setSelectedIssue(issue)}
@@ -137,32 +119,18 @@ export default function AllIssues() {
                   )}
 
                   <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400 mb-6">
-                    <p>
-                      <span className="font-semibold">Category:</span> {issue.category}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Location:</span> {issue.location}
-                    </p>
-                    <p>
-                      <span className="font-semibold text-green-600">Budget:</span> ৳{issue.amount}
-                    </p>
+                    <p><span className="font-semibold">Category:</span> {issue.category}</p>
+                    <p><span className="font-semibold">Location:</span> {issue.location}</p>
+                    <p><span className="font-semibold text-green-600">Budget:</span> ৳{issue.amount}</p>
                   </div>
 
-                  {/* Buttons - Always at Bottom */}
-                  <div className="flex gap-3 mt-auto">
-                    <Link
-                      to={`/issue/${issue._id}`}
-                      className="flex-1 text-center bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3 rounded-xl transition"
-                    >
-                      See Details
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(issue._id)}
-                      className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition"
-                    >
-                      Delete
-                    </button>
-                  </div>
+                  {/* Only See Details Button */}
+                  <Link
+                    to={`/issue/${issue._id}`}
+                    className="mt-auto text-center bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-4 rounded-xl transition text-lg"
+                  >
+                    See Details
+                  </Link>
                 </div>
               </div>
             ))}
