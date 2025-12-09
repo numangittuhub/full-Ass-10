@@ -91,7 +91,7 @@ export default function MyIssues() {
             <p className="text-3xl text-gray-500 dark:text-gray-400">
               You haven't reported any issues yet
             </p>
-            <Link to="/add-issue" className="mt-6 inline-block btn-primary text-xl px-8 py-4">
+            <Link to="/add-issue" className="mt-6 inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl px-10 py-4 rounded-xl transition">
               Report Your First Issue
             </Link>
           </div>
@@ -110,12 +110,15 @@ export default function MyIssues() {
                 <div className="p-6 flex-1 flex flex-col">
                   {editingId === issue._id ? (
                     <>
+                      {/* Title */}
                       <input
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         className="w-full text-2xl font-bold mb-3 input input-bordered"
                         placeholder="Title"
                       />
+
+                      {/* Description */}
                       <textarea
                         value={formData.description}
                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -123,7 +126,9 @@ export default function MyIssues() {
                         className="w-full textarea textarea-bordered mb-3"
                         placeholder="Description"
                       />
-                      <div className="grid grid-cols-2 gap-3 mb-4">
+
+                      {/* Category + Status */}
+                      <div className="grid grid-cols-2 gap-3 mb-3">
                         <select
                           value={formData.category}
                           onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -143,12 +148,26 @@ export default function MyIssues() {
                           <option value="ended">Ended</option>
                         </select>
                       </div>
+
+                      {/* Amount - নতুন যোগ করা */}
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium mb-2">Suggested Budget (BDT)</label>
+                        <input
+                          type="number"
+                          value={formData.amount}
+                          onChange={(e) => setFormData({ ...formData, amount: Number(e.target.value) })}
+                          className="w-full input input-bordered"
+                          placeholder="e.g. 500"
+                        />
+                      </div>
+
+                      {/* Buttons */}
                       <div className="flex gap-3 mt-auto">
                         <button
                           onClick={() => saveEdit(issue._id)}
                           className="flex-1 btn btn-success"
                         >
-                          Save
+                          Save Changes
                         </button>
                         <button
                           onClick={() => setEditingId(null)}
@@ -164,12 +183,10 @@ export default function MyIssues() {
                         {issue.title}
                       </h3>
 
-                      {/* Short Description */}
                       <p className="text-gray-600 dark:text-gray-400 mb-4 flex-1 line-clamp-3">
                         {issue.description}
                       </p>
 
-                      {/* See More */}
                       {issue.description.length > 100 && (
                         <button
                           onClick={() => setSelectedIssue(issue)}
@@ -184,9 +201,9 @@ export default function MyIssues() {
                         <span className={`badge ${issue.status === "ongoing" ? "badge-warning" : "badge-success"}`}>
                           {issue.status}
                         </span>
+                        <span className="badge badge-info">৳{issue.amount}</span>
                       </div>
 
-                      {/* Buttons - Always at Bottom */}
                       <div className="flex gap-3 mt-auto">
                         <button
                           onClick={() => startEdit(issue)}
@@ -229,7 +246,7 @@ export default function MyIssues() {
             <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
               {selectedIssue.description}
             </p>
-            <div className="mt-8 flex justify-end">
+            <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setSelectedIssue(null)}
                 className="btn btn-primary"

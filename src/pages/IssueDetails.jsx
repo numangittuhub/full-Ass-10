@@ -115,26 +115,79 @@ export default function IssueDetails() {
       </div>
 
       {/* Modal */}
-      <dialog id="contribute_modal" className="modal modal-bottom sm:modal-middle">
-        <div className="modal-box">
-          <h3 className="text-2xl font-bold mb-6">Make Your Contribution</h3>
-          <form onSubmit={handleContribute} className="space-y-5">
-            <input name="name" type="text" placeholder="Your Full Name" required className="input input-bordered w-full" />
-            <input name="amount" type="number" min="50" placeholder="Amount in BDT (min 50)" required className="input input-bordered w-full" />
-            <input name="phone" type="tel" placeholder="Phone Number" required className="input input-bordered w-full" />
-            <input name="address" type="text" placeholder="Your Address" required className="input input-bordered w-full" />
+     {/* Contribute Modal */}
+<dialog id="contribute_modal" className="modal modal-bottom sm:modal-middle">
+  <div className="modal-box">
+    <h3 className="text-3xl font-bold mb-8 text-green-600">Make Your Contribution</h3>
+    <form onSubmit={handleContribute} className="space-y-6">
+      {/* Name - Auto filled if logged in */}
+      <div>
+        <label className="block text-lg font-medium mb-2">Your Name</label>
+        <input
+          name="name"
+          type="text"
+          defaultValue={user?.displayName || user?.email?.split("@")[0] || ""}
+          required
+          readOnly={!!user} // লগইন থাকলে এডিট করা যাবে না
+          className={`input input-bordered w-full text-lg ${user ? "bg-gray-100 dark:bg-gray-700" : ""}`}
+          placeholder="Your Full Name"
+        />
+      </div>
 
-            <div className="modal-action">
-              <button type="submit" className="btn btn-success">
-                Contribute Now
-              </button>
-              <button type="button" className="btn" onClick={() => document.getElementById("contribute_modal").close()}>
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      </dialog>
+      {/* Amount */}
+      <div>
+        <label className="block text-lg font-medium mb-2">Amount (BDT)</label>
+        <input
+          name="amount"
+          type="number"
+          min="50"
+          required
+          className="input input-bordered w-full text-lg"
+          placeholder="Minimum ৳50"
+        />
+      </div>
+
+      {/* Phone */}
+      <div>
+        <label className="block text-lg font-medium mb-2">Phone Number</label>
+        <input
+          name="phone"
+          type="tel"
+          required
+          className="input input-bordered w-full text-lg"
+          placeholder="01XXXXXXXXX"
+        />
+      </div>
+
+      {/* Address */}
+      <div>
+        <label className="block text-lg font-medium mb-2">Your Address</label>
+        <input
+          name="address"
+          type="text"
+          required
+          className="input input-bordered w-full text-lg"
+          placeholder="House no, Road, Area, City"
+        />
+      </div>
+
+      {/* Buttons */}
+      <div className="modal-action flex justify-center gap-6">
+        <button type="submit" className="btn btn-success btn-lg px-10">
+          Contribute Now
+        </button>
+        <button
+          type="button"
+          className="btn btn-ghost btn-lg px-10"
+          onClick={() => document.getElementById("contribute_modal").close()}
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</dialog>
+      
     </div>
   );
 }

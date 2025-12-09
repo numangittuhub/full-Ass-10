@@ -2,10 +2,13 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext.jsx";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 export default function AddIssue() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -14,6 +17,8 @@ export default function AddIssue() {
   } = useForm();
 
   const onSubmit = async (data) => {
+    setLoading(true);
+
     const formData = new FormData();
     formData.append("image", data.image[0]);
     formData.append("title", data.title);
@@ -44,6 +49,8 @@ export default function AddIssue() {
       }
     } catch (err) {
       Swal.fire("Error", "Failed to connect to server", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,18 +65,24 @@ export default function AddIssue() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Title */}
             <div>
-              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300">Issue Title</label>
+              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300">
+                Issue Title
+              </label>
               <input
                 {...register("title", { required: "Title is required" })}
                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
                 placeholder="e.g. Overflowing Garbage Bin"
               />
-              {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
+              {errors.title && (
+                <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
+              )}
             </div>
 
             {/* Category */}
             <div>
-              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300">Category</label>
+              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300">
+                Category
+              </label>
               <select
                 {...register("category", { required: "Please select a category" })}
                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg dark:bg-gray-700"
@@ -80,63 +93,92 @@ export default function AddIssue() {
                 <option value="Broken Public Property">Broken Public Property</option>
                 <option value="Road Damage">Road Damage</option>
               </select>
-              {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>}
+              {errors.category && (
+                <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>
+              )}
             </div>
 
             {/* Location */}
             <div>
-              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300">Location</label>
+              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300">
+                Location
+              </label>
               <input
                 {...register("location", { required: "Location is required" })}
                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg dark:bg-gray-700"
                 placeholder="e.g. Mirpur 10, Dhaka"
               />
-              {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>}
+              {errors.location && (
+                <p className="text-red-500 text-sm mt-1">{errors.location.message}</p>
+              )}
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300">Description</label>
+              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300">
+                Description
+              </label>
               <textarea
                 {...register("description", { required: "Description is required" })}
                 rows="4"
                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg dark:bg-gray-700"
                 placeholder="Describe the issue in detail..."
               />
-              {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>}
+              {errors.description && (
+                <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
+              )}
             </div>
 
             {/* Amount */}
             <div>
-              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300">Suggested Budget (BDT)</label>
+              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300">
+                Suggested Budget (BDT)
+              </label>
               <input
                 type="number"
                 {...register("amount", { required: "Amount is required", min: 1 })}
                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg dark:bg-gray-700"
                 placeholder="e.g. 500"
               />
-              {errors.amount && <p className="text-red-500 text-sm mt-1">{errors.amount.message}</p>}
+              {errors.amount && (
+                <p className="text-red-500 text-sm mt-1">{errors.amount.message}</p>
+              )}
             </div>
 
             {/* Image Upload */}
             <div>
-              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300">Upload Photo</label>
+              <label className="block text-lg font-medium text-gray-700 dark:text-gray-300">
+                Upload Photo
+              </label>
               <input
                 type="file"
                 accept="image/*"
                 {...register("image", { required: "Photo is required" })}
                 className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-700"
               />
-              {errors.image && <p className="text-red-500 text-sm mt-1">{errors.image.message}</p>}
+              {errors.image && (
+                <p className="text-red-500 text-sm mt-1">{errors.image.message}</p>
+              )}
             </div>
 
             {/* Submit */}
             <div className="text-center">
               <button
                 type="submit"
-                className="btn-primary text-xl px-12 py-4"
+                disabled={loading}
+                className={`
+                  relative flex items-center justify-center gap-2
+                  w-full text-xl px-12 py-4 rounded-xl
+                  bg-blue-600 hover:bg-blue-700 text-white font-semibold
+                  transition-all duration-300 shadow-lg
+                  disabled:bg-blue-400 disabled:cursor-not-allowed
+                `}
               >
-                Submit Issue
+                {loading ? (
+                  <span className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></span>
+                ) : (
+                  "Submit Issue"
+                )}
               </button>
             </div>
           </form>
