@@ -1,6 +1,6 @@
 // src/layout/Navbar.jsx
 import { useAuth } from "../context/AuthContext.jsx";
-import { useTheme } from "../context/ThemeContext.jsx"; // ← নতুন
+import { useTheme } from "../context/ThemeContext.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, LogOut, User, Sun, Moon } from "lucide-react";
 import { useState } from "react";
@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-  const { darkMode, toggleDarkMode } = useTheme(); // ← নতুন
+  const { darkMode, toggleDarkMode } = useTheme();
   const navigate = useNavigate();
   const [mobileMenu, setMobileMenu] = useState(false);
 
@@ -21,6 +21,12 @@ export default function Navbar() {
       timer: 1500,
     });
     navigate("/");
+    setMobileMenu(false); // মোবাইলে লগআউট করলে মেনু বন্ধ
+  };
+
+  // মোবাইলে কোনো লিঙ্কে ক্লিক করলে মেনু বন্ধ করবে
+  const handleMobileLinkClick = () => {
+    setMobileMenu(false);
   };
 
   return (
@@ -29,13 +35,12 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
 
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold tracking-wider">
+          <Link to="/" className="text-2xl font-bold tracking-wider" onClick={handleMobileLinkClick}>
             CleanCity
           </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-6">
-
             <Link to="/" className="hover:text-cyan-200 transition">Home</Link>
 
             {user ? (
@@ -65,7 +70,6 @@ export default function Navbar() {
                     </span>
                   </button>
 
-                  {/* Dropdown - Logout */}
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                     <button
                       onClick={handleLogout}
@@ -82,7 +86,6 @@ export default function Navbar() {
                 <Link to="/login" className="hover:text-cyan-200 transition">Login</Link>
                 <Link to="/register" className="hover:text-cyan-200 transition">Register</Link>
 
-                {/* Dark Mode for Guest */}
                 <button
                   onClick={toggleDarkMode}
                   className="p-2 rounded-full hover:bg-white/20 transition"
@@ -114,18 +117,20 @@ export default function Navbar() {
           <div className="md:hidden pb-4 border-t border-white/20 mt-3 pt-4">
             {user ? (
               <>
-                <Link to="/all-issues" className="block py-2 hover:text-cyan-200">All Issues</Link>
-                <Link to="/add-issue" className="block py-2 hover:text-cyan-200">Add Issue</Link>
-                <Link to="/my-issues" className="block py-2 hover:text-cyan-200">My Issues</Link>
-                <Link to="/my-contribution" className="block py-2 hover:text-cyan-200">My Contribution</Link>
+                <Link to="/" onClick={handleMobileLinkClick} className="block py-2 hover:text-cyan-200">Home</Link>
+                <Link to="/all-issues" onClick={handleMobileLinkClick} className="block py-2 hover:text-cyan-200">All Issues</Link>
+                <Link to="/add-issue" onClick={handleMobileLinkClick} className="block py-2 hover:text-cyan-200">Add Issue</Link>
+                <Link to="/my-issues" onClick={handleMobileLinkClick} className="block py-2 hover:text-cyan-200">My Issues</Link>
+                <Link to="/my-contribution" onClick={handleMobileLinkClick} className="block py-2 hover:text-cyan-200">My Contribution</Link>
                 <button onClick={handleLogout} className="block py-2 text-red-300 hover:text-red-200 w-full text-left">
                   Logout
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" className="block py-2 hover:text-cyan-200">Login</Link>
-                <Link to="/register" className="block py-2 hover:text-cyan-200">Register</Link>
+                <Link to="/" onClick={handleMobileLinkClick} className="block py-2 hover:text-cyan-200">Home</Link>
+                <Link to="/login" onClick={handleMobileLinkClick} className="block py-2 hover:text-cyan-200">Login</Link>
+                <Link to="/register" onClick={handleMobileLinkClick} className="block py-2 hover:text-cyan-200">Register</Link>
               </>
             )}
           </div>
